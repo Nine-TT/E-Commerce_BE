@@ -4,12 +4,15 @@ import (
 	"E-Commerce_BE/api"
 	DB "E-Commerce_BE/config/db"
 	"E-Commerce_BE/model"
+	"E-Commerce_BE/util"
 	"fmt"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	e := echo.New()
+
+	util.LoadEnv()
 
 	db, err := DB.ConnectDB()
 
