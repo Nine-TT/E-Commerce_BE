@@ -14,15 +14,6 @@ import (
 	"time"
 )
 
-type UserHandler interface {
-	AddUser(ctx echo.Context)
-	GetUser(ctx echo.Context)
-	GetAllUser(ctx echo.Context)
-	SignInUser(ctx echo.Context)
-	UpdateUser(ctx echo.Context)
-	DeleteUser(ctx echo.Context)
-}
-
 type userHandler struct {
 	repo repository.UserRepository
 }
@@ -51,8 +42,13 @@ type jwtCustomClaims struct {
 
 func (h *userHandler) AddUser(ctx echo.Context) error {
 	var user model.User
+
 	if err := ctx.Bind(&user); err != nil {
-		return ctx.JSON(http.StatusBadRequest, "Misssing!")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if errValid := ctx.Validate(user); errValid != nil {
+		return errValid
 	}
 
 	hasspass, _ := HashPassword(user.PassWord)
@@ -89,7 +85,6 @@ func (h *userHandler) SignInUser(ctx echo.Context) error {
 			"message": "User not found",
 		})
 		return nil
-
 	}
 
 	if isTrue := CheckPasswordHash(user.PassWord, dbUser.PassWord); isTrue == true {
@@ -136,4 +131,50 @@ func (h *userHandler) GetUserById(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, user)
 
 	return nil
+}
+
+func (h *userHandler) GetAllUser(ctx echo.Context) error {
+	user, err := h.repo.GetAllUser()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+
+	}
+	return ctx.JSON(http.StatusOK, user)
+}
+
+func (h *userHandler) UpdateUser(ctx echo.Context) error {
+	var user model.User
+	if err := ctx.Bind(&user); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	}
+	id := ctx.Param("id")
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
+	}
+	user.ID = uint(intID)
+	user, err = h.repo.UpdateUser(user)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"message": "Update user success",
+		"user":    user,
+	})
+}
+
+func (h *userHandler) DeleteUser(ctx echo.Context) error {
+	var user model.User
+	id := ctx.Param("id")
+	intID, _ := strconv.Atoi(id)
+	user.ID = uint(intID)
+	user, err := h.repo.DeleteUser(user)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"message": "Delete user success",
+	})
+
 }

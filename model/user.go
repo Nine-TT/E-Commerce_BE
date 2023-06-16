@@ -1,16 +1,18 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
-	ID         uint      `json:"id" gorm:"primaryKey"`
-	FirstName  string    `json:"first_name"`
-	LastName   string    `json:"last_name"`
-	Address    string    `json:"address"`
-	Phone      string    `json:"phone"`
-	Email      string    `json:"email"`
-	PassWord   string    `json:"pass_word"`
-	GenderCode string    `json:"gender_code"`
+	ID         uint      `json:"id" gorm:"primaryKey" `
+	FirstName  string    `json:"first_name" validate:"required"`
+	LastName   string    `json:"last_name" validate:"required"`
+	Address    string    `json:"address" validate:"required"`
+	Phone      string    `json:"phone" validate:"required"`
+	Email      string    `json:"email" validate:"required,email"`
+	PassWord   string    `json:"pass_word" validate:"required"`
+	GenderCode string    `json:"gender_code" validate:"required"`
 	RoleCode   string    `json:"role_code" gorm:"default:R2"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`

@@ -21,9 +21,13 @@ type userRepository struct {
 }
 
 // NewUserRepository --> returns new user repository
-func NewUserRepository(db *gorm.DB) *userRepository {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
+
+//func (db *userRepository) GetUser(id int) (user model.User, err error) {
+//	return user, db.db.First(&user, id).Error
+//}
 
 func (db *userRepository) GetUser(id int) (user model.User, err error) {
 	return user, db.db.First(&user, id).Error
