@@ -22,6 +22,8 @@ func main() {
 	er := db.AutoMigrate(
 		model.User{},
 		model.Product{},
+		model.Category{},
+		model.Order{},
 	)
 
 	if er != nil {

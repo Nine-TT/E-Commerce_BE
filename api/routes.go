@@ -29,6 +29,11 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	//Category
 	categoryGroup := e.Group("api/v1/category")
 	categoryGroup.POST("/create", categoryHandler.CreateCategory)
+	categoryGroup.GET("/get-category/:id", categoryHandler.GetCategory)
+	categoryGroup.GET("/get-by-code/:code", categoryHandler.GetCategoryByCode)
+	categoryGroup.GET("/all-category", categoryHandler.GetAllCategory)
+	categoryGroup.PUT("/update", categoryHandler.UpdateCategory)
+	categoryGroup.DELETE("/delete/:id", categoryHandler.DeleteCategory)
 
 	//Management Product
 	productGroup := e.Group("api/v1/product")
