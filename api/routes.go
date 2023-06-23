@@ -21,8 +21,8 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// Management user
 	userGroup := e.Group("api/v1/user")
-	userGroup.GET("/get-user", userHandler.GetUserById)
-	userGroup.GET("/get-all", userHandler.GetAllUser)
+	userGroup.GET("/:id", userHandler.GetUserById)
+	userGroup.GET("/all", userHandler.GetAllUser)
 	userGroup.PUT("/update/:id", userHandler.UpdateUser)
 	userGroup.DELETE("/delete/:id", userHandler.DeleteUser)
 
@@ -40,10 +40,14 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	productGroup.POST("/create", productHandler.AddProduct)
 	productGroup.GET("/get-product/:id", productHandler.GetProduct)
 	productGroup.GET("/all-product", productHandler.GetAllProduct)
+	productGroup.GET("/product-page", productHandler.GetProductsByPage)
 	productGroup.DELETE("/delete/:id", productHandler.DeleteProduct)
+	// => Filter product
+	productGroup.GET("/price/min", productHandler.SortProductPriceMin)
+	productGroup.GET("/price/max", productHandler.SortProductPriceMax)
 
 	//order
 	orderGroup := e.Group("api/v1/order")
 	orderGroup.POST("/create", orderHandler.OrderProduct)
-
+	orderGroup.GET("/user/:id", orderHandler.GetOrderByUserId)
 }

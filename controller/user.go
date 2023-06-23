@@ -3,6 +3,7 @@ package controller
 import (
 	"E-Commerce_BE/model"
 	"E-Commerce_BE/repository"
+	"E-Commerce_BE/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -119,8 +120,8 @@ func (h *userHandler) SignInUser(ctx echo.Context) error {
 
 func (h *userHandler) GetUserById(ctx echo.Context) error {
 
-	id := ctx.FormValue("id")
-	userId, _ := strconv.Atoi(id)
+	id := ctx.Param("id")
+	userId := util.GetInteger(id)
 
 	user, err := h.repo.GetUser(userId)
 
@@ -153,7 +154,7 @@ func (h *userHandler) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 	user.ID = uint(intID)
-	user, err = h.repo.UpdateUser(user)
+	user, err = h.repo.UpdateUser(user, intID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}

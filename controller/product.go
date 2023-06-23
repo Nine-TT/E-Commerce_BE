@@ -3,6 +3,7 @@ package controller
 import (
 	"E-Commerce_BE/model"
 	"E-Commerce_BE/repository"
+	"E-Commerce_BE/util"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"io"
@@ -106,6 +107,54 @@ func (h *productHandler) GetAllProduct(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, product)
+}
+
+func (h *productHandler) GetProductsByPage(ctx echo.Context) error {
+	page := util.GetInteger(ctx.FormValue("page"))
+	pageSize := util.GetInteger(ctx.FormValue("size"))
+
+	var listProducts []model.Product
+
+	listProducts, err := h.repo.GetProductsByPage(page, pageSize)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"Error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, listProducts)
+}
+
+// filter with product price
+
+func (h *productHandler) SortProductPriceMin(ctx echo.Context) error {
+	page := util.GetInteger(ctx.FormValue("page"))
+	size := util.GetInteger(ctx.FormValue("size"))
+
+	var listProducts []model.Product
+
+	listProducts, err := h.repo.GetSortedProductsByPriceMinAndPage(page, size)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, listProducts)
+}
+
+func (h *productHandler) SortProductPriceMax(ctx echo.Context) error {
+	page := util.GetInteger(ctx.FormValue("page"))
+	size := util.GetInteger(ctx.FormValue("size"))
+
+	var listProducts []model.Product
+
+	listProducts, err := h.repo.GetSortedProductsByPriceMaxAndPage(page, size)
+
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, listProducts)
+
 }
 
 func (h *productHandler) UpdateProduct(ctx echo.Context) error {

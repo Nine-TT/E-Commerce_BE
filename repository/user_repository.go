@@ -12,7 +12,7 @@ type UserRepository interface {
 	GetUser(int) (model.User, error)
 	GetByEmail(string) (model.User, error)
 	GetAllUser() ([]model.User, error)
-	UpdateUser(model.User) (model.User, error)
+	UpdateUser(model.User, int) (model.User, error)
 	DeleteUser(model.User) (model.User, error)
 }
 
@@ -24,10 +24,6 @@ type userRepository struct {
 func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
-
-//func (db *userRepository) GetUser(id int) (user model.User, err error) {
-//	return user, db.db.First(&user, id).Error
-//}
 
 func (db *userRepository) GetUser(id int) (user model.User, err error) {
 	return user, db.db.First(&user, id).Error
@@ -53,15 +49,16 @@ func (db *userRepository) AddUser(user model.User) (model.User, error) {
 
 		return user, err
 	}
+
 	// email already exists
 	return user, fmt.Errorf("email already exists")
 }
 
-func (db *userRepository) UpdateUser(user model.User) (model.User, error) {
-	if err := db.db.First(&user, user.ID).Error; err != nil {
+func (db *userRepository) UpdateUser(new_user model.User, id int) (user model.User, err error) {
+	if err := db.db.First(&user, id).Error; err != nil {
 		return user, err
 	}
-	return user, db.db.Model(&user).Updates(&user).Error
+	return user, db.db.Model(&user).Updates(&new_user).Error
 }
 
 func (db *userRepository) DeleteUser(user model.User) (model.User, error) {
