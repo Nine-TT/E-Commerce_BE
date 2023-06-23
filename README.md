@@ -1,1 +1,1 @@
-# E-Commerce Server 
+# E-Commerce Service
