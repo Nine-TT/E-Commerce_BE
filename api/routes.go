@@ -45,6 +45,9 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	// => Filter product
 	productGroup.GET("/price/min", productHandler.SortProductPriceMin)
 	productGroup.GET("/price/max", productHandler.SortProductPriceMax)
+	productGroup.GET("/price/between", productHandler.ProductTwoPrice)
+
+	productGroup.GET("/search/:name", productHandler.SearchProductName)
 
 	//order
 	orderGroup := e.Group("api/v1/order")

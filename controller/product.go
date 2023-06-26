@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -89,11 +90,7 @@ func (h *productHandler) AddProduct(ctx echo.Context) error {
 }
 
 func (h *productHandler) GetProduct(ctx echo.Context) error {
-	prodStr := ctx.Param("id")
-	prodID, err := strconv.Atoi(prodStr)
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
-	}
+	prodID := util.GetInteger(ctx.Param("id"))
 	product, err := h.repo.Getproduct(prodID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
@@ -189,4 +186,37 @@ func (h *productHandler) DeleteProduct(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "Delete product success",
 	})
+}
+
+func (h *productHandler) SearchProductName(ctx echo.Context) error {
+	name := ctx.Param("name")
+
+	products, err := h.repo.SearchProducts(name)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"Error": err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, products)
+}
+
+// loc san pham theo gia khoang x - y
+
+func (h *productHandler) ProductTwoPrice(ctx echo.Context) error {
+	var prices struct {
+		FirstPrice  float32 `json:"first_price"`
+		SecondPrice float32 `json:"second_price"`
+	}
+
+	if err := ctx.Bind(&prices); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{"Error": err.Error()})
+	}
+
+	listProducts, _ := h.repo.ProductTwoPrice(prices.FirstPrice, prices.SecondPrice)
+
+	sort.Slice(listProducts, func(i, j int) bool {
+		return listProducts[i].Price < listProducts[j].Price
+	})
+
+	return ctx.JSON(http.StatusOK, listProducts)
 }

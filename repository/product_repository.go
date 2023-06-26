@@ -17,6 +17,8 @@ type ProductRepository interface {
 	DeleteProduct(model.Product) (model.Product, error)
 	GetSortedProductsByPriceMinAndPage(int, int) ([]model.Product, error)
 	GetSortedProductsByPriceMaxAndPage(int, int) ([]model.Product, error)
+	SearchProducts(string) ([]model.Product, error)
+	ProductTwoPrice(float32, float32) ([]model.Product, error)
 }
 
 type productRepository struct {
@@ -137,4 +139,12 @@ func (db *productRepository) DeleteProduct(product model.Product) (model.Product
 		return product, err
 	}
 	return product, db.db.Delete(&product).Error
+}
+
+func (db *productRepository) SearchProducts(char string) (products []model.Product, err error) {
+	return products, db.db.Where("Title LIKE ?", "%"+char+"%").Find(&products).Error
+}
+
+func (db *productRepository) ProductTwoPrice(firstPrice, secondPrice float32) (products []model.Product, err error) {
+	return products, db.db.Where("Price BETWEEN ? AND ?", firstPrice, secondPrice).Find(&products).Error
 }
