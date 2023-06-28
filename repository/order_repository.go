@@ -24,6 +24,7 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 	}
 }
 
+// order || add product to cart
 func (db *orderRepository) OrderProduct(new_order model.Order) (model.Order, error) {
 	var order model.Order
 	err := db.db.Where("user_id = ? AND product_id = ?", new_order.UserID, new_order.ProductID).First(&order).Error
