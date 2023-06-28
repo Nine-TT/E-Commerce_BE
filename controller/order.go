@@ -20,15 +20,15 @@ func NewOrderHandler(db *gorm.DB) *orderHandler {
 }
 
 func (h *orderHandler) OrderProduct(ctx echo.Context) error {
-	productId := ctx.FormValue("id")
-	quantityIDStr := ctx.FormValue("quantity")
-	userIDStr := ctx.FormValue("userID")
+	var order model.Order
 
-	proInt := util.GetInteger(productId)
-	quanInt := util.GetInteger(quantityIDStr)
-	userInt := util.GetInteger(userIDStr)
+	if err := ctx.Bind(&order); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{
+			"Error": err.Error(),
+		})
+	}
 
-	if err := h.repo.OrderProduct(userInt, proInt, quanInt); err != nil {
+	if _, err := h.repo.OrderProduct(order); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{
 			"error": err.Error(),
 		})
@@ -63,10 +63,9 @@ func (h *orderHandler) OrderProduct(ctx echo.Context) error {
 func (h *orderHandler) GetOrderByUserId(ctx echo.Context) error {
 	var listOrders []model.Order
 
-	id := ctx.Param("id")
-	idInt := util.GetInteger(id)
+	id := util.GetInteger(ctx.Param("id"))
 
-	listOrders, err := h.repo.GetOrder(idInt)
+	listOrders, err := h.repo.GetOrder(id)
 
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{
@@ -75,4 +74,24 @@ func (h *orderHandler) GetOrderByUserId(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, listOrders)
+}
+
+func (h *orderHandler) UpdateOrderQuanty(ctx echo.Context) error {
+	id := util.GetInteger(ctx.Param("id"))
+	var order model.Order
+
+	ctx.Bind(&order)
+
+	order, err := h.repo.UpdateOrderQuantity(order, id)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{
+			"Error": err.Error(),
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"mesage": "update quantity success!",
+		"order":  order,
+	})
 }

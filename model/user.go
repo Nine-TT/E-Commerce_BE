@@ -17,9 +17,11 @@ type User struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	state      bool      `json:"state"`
+	//Role       Role      `gorm:"references:ID"`
 }
 
 type Role struct {
+	ID    uint   `gorm:"primaryKey"`
 	Key   string `gorm:"primaryKey" json:"key"`
 	Value string `json:"value"`
 }

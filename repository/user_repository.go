@@ -34,7 +34,7 @@ func (db *userRepository) GetByEmail(email string) (user model.User, err error) 
 }
 
 func (db *userRepository) GetAllUser() (users []model.User, err error) {
-	return users, db.db.Find(&users).Error
+	return users, db.db.Omit("PassWord").Find(&users).Error
 }
 
 func (db *userRepository) AddUser(user model.User) (model.User, error) {

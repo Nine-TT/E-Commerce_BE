@@ -8,6 +8,7 @@ import (
 
 type ProductRepository interface {
 	AddProduct(model.Product) (model.Product, error)
+	UpLoad(string) ([]string, error)
 	Getproduct(int) (model.Product, error)
 	GetAllproduct() ([]model.Product, error)
 	GetProductsByPage(int, int) ([]model.Product, error)
@@ -31,6 +32,11 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 
 func (db *productRepository) AddProduct(product model.Product) (model.Product, error) {
 	return product, db.db.Create(&product).Error
+}
+
+func (db *productRepository) UpLoad(file string) (listPath []string, err error) {
+
+	return listPath, err
 }
 
 func (db *productRepository) Getproduct(id int) (product model.Product, err error) {

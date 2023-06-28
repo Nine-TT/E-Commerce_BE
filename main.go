@@ -2,6 +2,7 @@ package main
 
 import (
 	"E-Commerce_BE/api"
+	"E-Commerce_BE/config/cors"
 	DB "E-Commerce_BE/config/db"
 	"E-Commerce_BE/model"
 	"E-Commerce_BE/util"
@@ -13,14 +14,25 @@ import (
 func main() {
 	e := echo.New()
 
+	// Validate input model
 	e.Validator = &util.CustomValidator{Validator: validator.New()}
+	// ---------------------------------------
 
+	// load file .env
 	util.LoadEnv()
+	// ---------------------------------------
 
+	// connect db
 	db, err := DB.ConnectDB()
+	// ---------------------------------------
+
+	// config cors
+	cors.SetupCORS(e)
+	// ---------------------------------------
 
 	er := db.AutoMigrate(
 		model.User{},
+		//model.Role{},
 		model.Product{},
 		model.Category{},
 		model.Order{},
@@ -37,7 +49,9 @@ func main() {
 		fmt.Println("connect db success!")
 	}
 
+	// init routes
 	api.InitRoutes(e, db)
+	// ---------------------------------------
 
 	e.Static("/", "product_images")
 

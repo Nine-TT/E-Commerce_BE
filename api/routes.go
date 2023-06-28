@@ -2,6 +2,7 @@ package api
 
 import (
 	"E-Commerce_BE/controller"
+	"E-Commerce_BE/middleware"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -20,7 +21,9 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	authGroup.POST("/login", userHandler.SignInUser)
 
 	// Management user
+
 	userGroup := e.Group("api/v1/user")
+	userGroup.Use(middleware.AuthorizeJWT())
 	userGroup.GET("/:id", userHandler.GetUserById)
 	userGroup.GET("/all", userHandler.GetAllUser)
 	userGroup.PUT("/update/:id", userHandler.UpdateUser)
@@ -53,4 +56,8 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	orderGroup := e.Group("api/v1/order")
 	orderGroup.POST("/create", orderHandler.OrderProduct)
 	orderGroup.GET("/user/:id", orderHandler.GetOrderByUserId)
+	orderGroup.PUT("/update/:id", orderHandler.UpdateOrderQuanty)
+
+	// update order
+
 }
