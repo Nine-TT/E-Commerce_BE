@@ -32,22 +32,10 @@ func AuthorizeJWT() echo.MiddlewareFunc {
 
 			tokenString := authHeader[len(BearerSchema):]
 
-			if token, err := ValidateToken(tokenString); err != nil {
-				fmt.Println("token", tokenString, err.Error())
+			if _, err := ValidateToken(tokenString); err != nil {
 				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
 					"error": "Not Valid Token",
 				})
-			} else {
-				if claims, ok := token.Claims.(jwt.MapClaims); !ok {
-					return c.NoContent(http.StatusUnauthorized)
-				} else {
-					if token.Valid {
-						c.Set("userID", claims["userID"])
-						fmt.Println("during authorization", claims["userID"])
-					} else {
-						return c.NoContent(http.StatusUnauthorized)
-					}
-				}
 			}
 
 			return next(c)
