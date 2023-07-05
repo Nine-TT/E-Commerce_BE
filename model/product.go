@@ -23,3 +23,9 @@ type ProductImage struct {
 	ProductId     uint   `json:"product_id"`
 	Product_image string `json:"product_images"`
 }
+
+type ProductSize struct {
+	ID       uint   `json:"id" gorm:"primaryKey"`
+	quantity int    `json:"quantity"`
+	Size     string `json:"size"`
+}

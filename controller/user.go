@@ -38,6 +38,7 @@ type jwtCustomClaims struct {
 	Id        uint
 	FirstName string
 	LastName  string
+	Role      string
 	jwt.RegisteredClaims
 }
 
@@ -52,8 +53,8 @@ func (h *userHandler) AddUser(ctx echo.Context) error {
 		return errValid
 	}
 
-	hasspass, _ := HashPassword(user.PassWord)
-	user.PassWord = hasspass
+	hasspass, _ := HashPassword(user.Password)
+	user.Password = hasspass
 
 	User, err := h.repo.AddUser(user)
 	if err != nil {
@@ -88,12 +89,13 @@ func (h *userHandler) SignInUser(ctx echo.Context) error {
 		return nil
 	}
 
-	if isTrue := CheckPasswordHash(user.PassWord, dbUser.PassWord); isTrue == true {
+	if isTrue := CheckPasswordHash(user.Password, dbUser.Password); isTrue == true {
 
 		claims := &jwtCustomClaims{
-			user.ID,
-			user.FirstName,
-			user.LastName,
+			dbUser.ID,
+			dbUser.FirstName,
+			dbUser.LastName,
+			dbUser.RoleCode,
 			jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
 			},

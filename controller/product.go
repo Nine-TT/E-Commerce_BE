@@ -66,8 +66,14 @@ func (h *productHandler) AddProduct(ctx echo.Context) error {
 	}
 	defer src.Close()
 
+	path := "product_images/" + product.Product_code
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, 0660)
+	}
+
 	fileByte, _ := io.ReadAll(src)
-	fileName := "product_images/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
+	fileName := path + "/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
 	filePaths := "E-Commerce/" + fileName
 
 	os.WriteFile(fileName, fileByte, 0777)
@@ -96,6 +102,27 @@ func (h *productHandler) GetProduct(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, product)
+}
+
+func (h *productHandler) GetListProducts(ctx echo.Context) error {
+	var listIDs struct {
+		IDs []int `json:"id"`
+	}
+
+	if err := ctx.Bind(&listIDs); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
+	}
+
+	listPodcuts, err := h.repo.GetProdcuts(listIDs.IDs)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, echo.Map{
+			"Error": err.Error(),
+		})
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, listPodcuts)
 }
 
 func (h *productHandler) GetAllProduct(ctx echo.Context) error {
@@ -173,6 +200,7 @@ func (h *productHandler) UpdateProduct(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, product)
 
 }
+
 func (h *productHandler) DeleteProduct(ctx echo.Context) error {
 
 	var product model.Product
@@ -185,6 +213,26 @@ func (h *productHandler) DeleteProduct(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{
 		"message": "Delete product success",
+	})
+}
+
+func (h *productHandler) DeleteProducts(ctx echo.Context) error {
+	var listIDs struct {
+		IDs []int `json:"id"`
+	}
+
+	if err := ctx.Bind(&listIDs); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
+	}
+
+	err := h.repo.DeleteProducts(listIDs.IDs)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, echo.Map{
+			"Error": err.Error(),
+		})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{
+		"message": "Delete list product success",
 	})
 }
 

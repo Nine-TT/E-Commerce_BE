@@ -23,7 +23,7 @@ type User struct {
 	Gender Gender `gorm:"foreignkey:GenderCode"`
 
 	//has many (one-to-many)
-	Orders []Order `gorm:"foreignkey:UserID"`
+	Orders []Order `gorm:"foreignkey:UserID" json:"orders"`
 }
 
 type Role struct {
