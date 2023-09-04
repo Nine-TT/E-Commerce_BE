@@ -4,6 +4,7 @@ import (
 	"E-Commerce_BE/model"
 	"errors"
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -11,7 +12,7 @@ type UserRepository interface {
 	AddUser(user model.User) (model.User, error)
 	GetUser(int) (model.User, error)
 	GetByEmail(string) (model.User, error)
-	GetAllUser() ([]model.User, error)
+	GetAllUser(page, pageSize int) ([]model.User, error)
 	UpdateUser(model.User, int) (model.User, error)
 	DeleteUser(model.User) (model.User, error)
 }
@@ -26,15 +27,26 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (db *userRepository) GetUser(id int) (user model.User, err error) {
-	return user, db.db.First(&user, id).Error
+	return user, db.db.Omit("password").Preload("Gender").Preload("Role").Preload("Orders").First(&user, id).Error
 }
 
 func (db *userRepository) GetByEmail(email string) (user model.User, err error) {
 	return user, db.db.First(&user, "email=?", email).Error
 }
 
-func (db *userRepository) GetAllUser() (users []model.User, err error) {
-	return users, db.db.Omit("PassWord").Find(&users).Error
+func (db *userRepository) CountAllUsers() (count int, err error) {
+	var totalCount int64
+	err = db.db.Model(&model.User{}).Count(&totalCount).Error
+	if err != nil {
+		return 0, err
+	}
+	return int(totalCount), nil
+}
+
+func (db *userRepository) GetAllUser(page, pageSize int) (users []model.User, err error) {
+	offset := (page - 1) * pageSize
+	fmt.Println("============: ", page)
+	return users, db.db.Omit("password").Preload("Gender").Preload("Role").Preload("Orders").Offset(offset).Limit(pageSize).Find(&users).Error
 }
 
 func (db *userRepository) AddUser(user model.User) (model.User, error) {

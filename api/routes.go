@@ -2,6 +2,7 @@ package api
 
 import (
 	"E-Commerce_BE/controller"
+
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -43,11 +44,11 @@ func InitRoutes(e *echo.Echo, db *gorm.DB) {
 	productGroup := e.Group("api/v1/product")
 	productGroup.POST("/create", productHandler.AddProduct)
 	productGroup.GET("/get-product/:id", productHandler.GetProduct)
-	productGroup.GET("/list", productHandler.GetListProducts)
+	// productGroup.GET("/list", productHandler.GetListProducts)
 	productGroup.GET("/all-product", productHandler.GetAllProduct)
 	productGroup.GET("/product-page", productHandler.GetProductsByPage)
 	productGroup.DELETE("/delete/:id", productHandler.DeleteProduct)
-	productGroup.DELETE("/delete/list", productHandler.DeleteProducts)
+	// productGroup.DELETE("/delete/list", productHandler.DeleteProducts)
 
 	// => Filter product
 	productGroup.GET("/price/min", productHandler.SortProductPriceMin)

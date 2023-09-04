@@ -56,7 +56,7 @@ func (h *userHandler) AddUser(ctx echo.Context) error {
 	hasspass, _ := HashPassword(user.Password)
 	user.Password = hasspass
 
-	User, err := h.repo.AddUser(user)
+	_, err := h.repo.AddUser(user)
 	if err != nil {
 		if strings.Contains(err.Error(), "email already exists") {
 			return ctx.JSON(http.StatusConflict, echo.Map{
@@ -70,7 +70,6 @@ func (h *userHandler) AddUser(ctx echo.Context) error {
 
 	ctx.JSON(http.StatusOK, echo.Map{
 		"message": "Create user success",
-		"user":    User,
 	})
 	return nil
 }
@@ -137,7 +136,21 @@ func (h *userHandler) GetUserById(ctx echo.Context) error {
 }
 
 func (h *userHandler) GetAllUser(ctx echo.Context) error {
-	user, err := h.repo.GetAllUser()
+	//var Page struct {
+	//	page     int `json:"page"`
+	//	pageSize int `json:"page_size"`
+	//}
+
+	pageNumber := util.GetInteger(ctx.FormValue("page_number"))
+	pageSize := util.GetInteger(ctx.FormValue("page_size"))
+
+	//if err := ctx.Bind(&Page); err != nil {
+	//	ctx.JSON(http.StatusBadRequest, "Bind data error!")
+	//}
+
+	//fmt.Println(">>>>>>>>>>>>>>: ", Page.page)
+
+	user, err := h.repo.GetAllUser(pageNumber, pageSize)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 

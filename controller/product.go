@@ -4,8 +4,6 @@ import (
 	"E-Commerce_BE/model"
 	"E-Commerce_BE/repository"
 	"E-Commerce_BE/util"
-	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +11,9 @@ import (
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func upload(ctx echo.Context) string {
@@ -104,26 +105,26 @@ func (h *productHandler) GetProduct(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, product)
 }
 
-func (h *productHandler) GetListProducts(ctx echo.Context) error {
-	var listIDs struct {
-		IDs []int `json:"id"`
-	}
+// func (h *productHandler) GetListProducts(ctx echo.Context) error {
+// 	var listIDs struct {
+// 		IDs []int `json:"id"`
+// 	}
 
-	if err := ctx.Bind(&listIDs); err != nil {
-		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
-	}
+// 	if err := ctx.Bind(&listIDs); err != nil {
+// 		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
+// 	}
 
-	listPodcuts, err := h.repo.GetProdcuts(listIDs.IDs)
+// 	listPodcuts, err := h.repo.GetProdcuts(listIDs.IDs)
 
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, echo.Map{
-			"Error": err.Error(),
-		})
-		return err
-	}
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, echo.Map{
+// 			"Error": err.Error(),
+// 		})
+// 		return err
+// 	}
 
-	return ctx.JSON(http.StatusOK, listPodcuts)
-}
+// 	return ctx.JSON(http.StatusOK, listPodcuts)
+// }
 
 func (h *productHandler) GetAllProduct(ctx echo.Context) error {
 	product, err := h.repo.GetAllproduct()
@@ -216,25 +217,25 @@ func (h *productHandler) DeleteProduct(ctx echo.Context) error {
 	})
 }
 
-func (h *productHandler) DeleteProducts(ctx echo.Context) error {
-	var listIDs struct {
-		IDs []int `json:"id"`
-	}
+// func (h *productHandler) DeleteProducts(ctx echo.Context) error {
+// 	var listIDs struct {
+// 		IDs []int `json:"id"`
+// 	}
 
-	if err := ctx.Bind(&listIDs); err != nil {
-		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
-	}
+// 	if err := ctx.Bind(&listIDs); err != nil {
+// 		return ctx.JSON(http.StatusInternalServerError, "Error Bind Data!")
+// 	}
 
-	err := h.repo.DeleteProducts(listIDs.IDs)
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, echo.Map{
-			"Error": err.Error(),
-		})
-	}
-	return ctx.JSON(http.StatusOK, echo.Map{
-		"message": "Delete list product success",
-	})
-}
+// 	err := h.repo.DeleteProducts(listIDs.IDs)
+// 	if err != nil {
+// 		return ctx.JSON(http.StatusInternalServerError, echo.Map{
+// 			"Error": err.Error(),
+// 		})
+// 	}
+// 	return ctx.JSON(http.StatusOK, echo.Map{
+// 		"message": "Delete list product success",
+// 	})
+// }
 
 func (h *productHandler) SearchProductName(ctx echo.Context) error {
 	name := ctx.Param("name")

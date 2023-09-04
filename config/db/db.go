@@ -11,7 +11,7 @@ func ConnectDB() (*gorm.DB, error) {
 	Db_user_name := os.Getenv("DB_USERNAME")
 	Db_password := os.Getenv("DB_PASSWORD")
 	Db_name := os.Getenv("DB_NAME")
-	//Db_localhost := os.Getenv("DB_HOST")
+	//Db_port := os.Getenv("DB_PORT")
 
 	dsn := Db_user_name + ":" + Db_password + "@tcp(localhost:3306)/" + Db_name + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
